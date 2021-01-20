@@ -6,7 +6,7 @@ const Picture = require('../models/picture.model.js');
 // postman: request settings: POST, localhost:3000/api/register, Body > inputs
 
 module.exports.getPictures = (req, res, next) => {
-    var pictures = Picture.find({userId: req._id}, (err, pictures) => {
+    var pictures = Picture.find({userId: req._id}, {_id: true, description: true}, (err, pictures) => {
         if (!err) {
             res.send(pictures);
         } else {
@@ -25,6 +25,17 @@ module.exports.postPicture = (req, res, next) => {
         console.log(err, picture);
         if (!err) {
             res.send(picture);
+        } else {
+            return next(err);
+        }
+    });
+}
+
+module.exports.downloadPicture = (req, res, next) => {
+    Picture.findById(req.params.id, (err, picture) => {
+        if (!err) {
+            res.contentType('image/png');
+            res.send(picture.content);
         } else {
             return next(err);
         }

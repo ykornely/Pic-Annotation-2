@@ -20,5 +20,7 @@ router.get('/userProfile', jwtHelper.verifyJwtToken, ctrlUser.userProfile); // p
 router.post('/pictures', jwtHelper.verifyJwtToken, upload.single("picture"), ctrlPicture.postPicture);
 router.get('/pictures', jwtHelper.verifyJwtToken, ctrlPicture.getPictures);
 
+router.get('/pictures/:id', jwtHelper.verifyJwtToken, ctrlPicture.downloadPicture);
+
 // using this exported router constant we can configure routing middleware inside this app
 module.exports = router;
