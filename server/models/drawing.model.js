@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const drawingSchema = new mongoose.Schema({
     content: {
-        type: Buffer
+        type: String
     },
     pictureId: {
         type: mongoose.Types.ObjectId

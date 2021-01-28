@@ -2,7 +2,6 @@
   <img src="/assets/img/single_user.png" id="icon" alt="User Icon" />
 </div>
 
-
 <form #signInForm="ngForm" (ngSubmit)="signInForm.valid && onSubmit(signInForm)"> <!--#email is a local reference. [(ngModel)] is a two way databinding to the email of the model in sign-in.component.ts-->
     <input type="text" name="email" #email="ngModel" [(ngModel)]="model.email" placeholder="Email" [pattern]="emailRegex" required
     [ngClass]="{'invalid-textbox': signInForm.submitted && !email.valid }">
@@ -19,5 +18,5 @@
 
 <!-- Error message from onSubmit -->
 <div class="alert" *ngIf="serverErrorMessages">
-  {{serverErrorMessages}}
+  {{ serverErrorMessages }}
 </div>

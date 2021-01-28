@@ -1,0 +1,8 @@
+<p>picture works!</p>
+<canvas #canvas></canvas>
+<div *ngFor="let picture of pictures">
+    <h3 [title]="picture._id">
+      {{ picture }}
+    </h3>
+</div>
+<p><input type="button" (click)="onLogout()" value="Logout" /></p>

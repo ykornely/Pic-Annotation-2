@@ -2,18 +2,24 @@ import { Component, OnInit, Input, ElementRef, AfterViewInit, ViewChild } from '
 import { UserService } from '../shared/user.service';
 import { Router } from "@angular/router";
 
-import { pairwise, takeUntil, switchMap } from 'rxjs/operators'
+import { pairwise, takeUntil, switchMap, tap, catchError } from 'rxjs/operators'
 import { fromEvent } from 'rxjs';
+import { PictureService } from '../shared/picture.service';
 //import { map } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-user-profile',
-  templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.css']
+  selector: 'app-picture',
+  templateUrl: './picture.component.html',
+  styleUrls: ['./picture.component.css']
 })
-export class UserProfileComponent implements OnInit, AfterViewInit {
+export class PictureComponent implements OnInit, AfterViewInit {
 
-  constructor(private userService: UserService, private router: Router) { }
+  pictures = [1, 2, 3, 4, 5];
+
+  constructor(private userService: UserService, private router: Router, private pictureService: PictureService) { 
+    
+  }
+  
   @ViewChild('canvas') public canvas: ElementRef;
 
   @Input() public width = 400;
@@ -86,6 +92,19 @@ export class UserProfileComponent implements OnInit, AfterViewInit {
   }
   
   ngOnInit(): void {
+    console.log(this.pictures[0]);
+    this.loadPictures();
+    setTimeout(() => {
+      console.log(this.pictures[0]); 
+    }, 10000);
+  }
+
+  loadPictures() {
+    this.pictureService.getPictures().subscribe({
+      next(response) { this.pictures = response; console.log(response); },
+      error(err) { console.error('Error: ' + err); },
+      complete() { console.log(this.pictures[0]); console.log('Completed'); }
+    });
   }
 
 

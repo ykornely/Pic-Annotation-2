@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'; // corresponding with user.service.ts
+import { CommonModule } from '@angular/common';
 // components
 // import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,20 +17,23 @@ import { UserService } from './shared/user.service';
 // other
 import { AuthGuard } from './auth/auth.guard';
 import { AuthInterceptor } from './auth/auth.interceptor';
+import { PictureComponent } from './picture/picture.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     UserComponent,
     SignUpComponent,
-    SignInComponent
+    SignInComponent,
+    PictureComponent
   ],
   imports: [
     BrowserModule,
     //AppRoutingModule, // could be removed later probably
     FormsModule,
     RouterModule.forRoot(appRoutes),
-    HttpClientModule
+    HttpClientModule,
+    CommonModule
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,

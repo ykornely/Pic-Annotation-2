@@ -8,6 +8,7 @@ const upload = multer({storage});
 // ctrlUser has the exported register function from user.controller.js
 const ctrlUser = require('../controllers/user.controller');
 const ctrlPicture = require('../controllers/picture.controller');
+const ctrlDrawing = require('../controllers/drawing.controller');
 
 const jwtHelper = require('../config/jwtHelper');
 
@@ -20,7 +21,11 @@ router.get('/userProfile', jwtHelper.verifyJwtToken, ctrlUser.userProfile); // p
 router.post('/pictures', jwtHelper.verifyJwtToken, upload.single("picture"), ctrlPicture.postPicture);
 router.get('/pictures', jwtHelper.verifyJwtToken, ctrlPicture.getPictures);
 
-router.get('/pictures/:id', jwtHelper.verifyJwtToken, ctrlPicture.downloadPicture);
+router.get('/pictures/:id', /*jwtHelper.verifyJwtToken,*/ ctrlPicture.downloadPicture);
+
+router.get('/pictures/:pictureId/drawings', jwtHelper.verifyJwtToken, ctrlDrawing.getDrawings);
+router.post('/pictures/:pictureId/drawings', jwtHelper.verifyJwtToken, ctrlDrawing.postDrawing);
+router.patch('/pictures/:pictureId/drawings/:drawingId', jwtHelper.verifyJwtToken, ctrlDrawing.patchDrawing);
 
 // using this exported router constant we can configure routing middleware inside this app
 module.exports = router;

@@ -9,6 +9,9 @@ const picSchema = new mongoose.Schema({
     },
     description: {
         type: String
+    },
+    aspectRatio: {
+        type: Number
     }
 });
 

@@ -23,14 +23,14 @@ export class SignInComponent implements OnInit {
 
   ngOnInit(): void {
     if(this.userService.isLoggedIn())
-    this.router.navigateByUrl('/userprofile');
+    this.router.navigateByUrl('/pictures');
   }
 
   onSubmit(form: NgForm) { 
     this.userService.login(form.value).subscribe(
       res => {
         this.userService.setToken(res['token']); // successful authentication
-        this.router.navigateByUrl('/userprofile');
+        this.router.navigateByUrl('/pictures');
       },
       err => {
         this.serverErrorMessages = err.error.message;

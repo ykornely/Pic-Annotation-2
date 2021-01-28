@@ -1,12 +1,14 @@
 const { response } = require('express');
 const mongoose = require('mongoose');
+const sizeOf = require('buffer-image-size');
 
 const Picture = require('../models/picture.model.js');
+const { size } = require('lodash');
 
 // postman: request settings: POST, localhost:3000/api/register, Body > inputs
 
 module.exports.getPictures = (req, res, next) => {
-    var pictures = Picture.find({userId: req._id}, {_id: true, description: true}, (err, pictures) => {
+    var pictures = Picture.find({userId: req._id}, {content: false}, (err, pictures) => {
         if (!err) {
             res.send(pictures);
         } else {
@@ -18,8 +20,10 @@ module.exports.getPictures = (req, res, next) => {
 module.exports.postPicture = (req, res, next) => {
     // console.log(req.file);
     var picture = new Picture();
+    var dimensions = sizeOf(req.file.buffer);
     picture.userId = new mongoose.mongo.ObjectId(req._id);
     picture.content = req.file.buffer;
+    picture.aspectRatio = dimensions.height / dimensions.width;
     picture.description = "";
     picture.save((err, picture) => {
         console.log(err, picture);
