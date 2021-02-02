@@ -1,16 +1,17 @@
 import CanvasDraw from 'react-canvas-draw'
 import { useRef } from 'react'
 import { useState, useEffect } from 'react'
-import { getDrawings, patchDrawing } from '../api'
+import { getDrawings, patchDrawing, createDrawing } from '../api'
 import { useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 
 const Editor = () => {
     const params = useParams<any>()
     const canvas = useRef<any>()
-    const [drawings, setDrawings] = useState([])
+    const [drawings, setDrawings] = useState<any[]>([])
     const [drawingId, setDrawingId] = useState('')
     const [drawingContent, setDrawingContent] = useState('')
+    const [drawingDesc, setDrawingDesc] = useState('')
     const [canvasHeight, setCanvasHeight] = useState(100)
 
     useEffect(() => {
@@ -22,31 +23,40 @@ const Editor = () => {
             if (drawings.length !== 0) {
                 setDrawingId(drawings[0]._id)
                 setDrawingContent(drawings[0].content)
+                setDrawingDesc(drawings[0].description)
             }
         }
         asyncGetDrawings()
+        // return () => {console.log("Editor unmounted")} // if you press "back", this arrow function will be called (umount)
     }, []) // runs when mounted
 
     if (drawings.length === 0) return null
+
+    const handleNewDrawing = async () => {
+        await createDrawing(params.pictureId)
+    }
 
     return (
         <div className="editor">
             <div className="drawings">
                 {drawings.map((drawing: any) => {
                     return (
-                        <div
+                        <button
                             onClick={() => {
                                 setDrawingId(drawing._id)
                                 setDrawingContent(drawing.content)
+                                setDrawingDesc(drawing.description)
+                                canvas.current.loadSaveData(drawing.content, true) // bug of the canvasdraw library: doesn't refresh automatically on change, we have to refresh it manually
                             }}
                             className="drawing"
                             key={drawing._id}
                         >
                             drawing
-                        </div>
+                        </button>
                     )
                 })}
             </div>
+            <div className="newDrawing"><button onClick={handleNewDrawing}>New Drawing</button></div>
             <div className="toolbar">
                 {drawingId !== '' && (
                     <>
@@ -70,8 +80,11 @@ const Editor = () => {
                         </button>
                         <button
                             className="tool"
-                            onClick={() => {
-                                patchDrawing(params.pictureId, drawingId, canvas.current.getSaveData())
+                            onClick={async () => {
+                                const response = await patchDrawing(params.pictureId, drawingId, canvas.current.getSaveData(), drawingDesc)
+                                const updatedDrawing = await response.json();
+                                const updatedDrawings = drawings.map((drawing) => (drawing._id === updatedDrawing._id ? updatedDrawing : drawing))
+                                setDrawings(updatedDrawings)
                             }}
                         >
                             save
@@ -102,7 +115,12 @@ const Editor = () => {
                     imgSrc={`http://localhost:3000/api/pictures/${params.pictureId}`}
                 />
             </div>
-            <div className="description">descirption</div>
+            <div className="description">
+                <textarea value={drawingDesc} onChange={(e) => setDrawingDesc(e.target.value)} />
+            </div>
+            <Link to={`/Pictures`}>
+                <h2>Back</h2>
+            </Link>
         </div>
     )
 }

@@ -35,6 +35,19 @@ module.exports.postPicture = (req, res, next) => {
     });
 }
 
+module.exports.patchPicture = async (req, res, next) => {
+    try {
+        const picture = await Picture.findOne({_id: req.params.pictureId});
+        picture.description = req.body.description;
+        await picture.save();
+        res.send("Ok, description updated!");
+    }
+    catch(error) {
+        console.error(error);
+        res.status(500).send(error.message)
+    }
+}
+
 module.exports.downloadPicture = (req, res, next) => {
     Picture.findById(req.params.id, (err, picture) => {
         if (!err) {

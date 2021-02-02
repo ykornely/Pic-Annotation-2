@@ -1,5 +1,3 @@
-import Login from './pages/Login'
-
 interface ILoginCreditentals {
     email: string
     password: string
@@ -16,16 +14,29 @@ const login = async (creditentals: ILoginCreditentals) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(creditentals),
     })
+
+    if (!response.ok) {
+        const body = await response.json()
+        throw new Error(body)
+    }
+
     return await response.json()
 }
 
 const signup = async (creditentals: ISignUpCreditentals) => {
     // creditentials contains the login information we want to log in with. If it checks out, the server returns a token.
+
     const response = await fetch('http://localhost:3000/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(creditentals),
     })
+
+    if (!response.ok) {
+        const body = await response.json()
+        throw new Error(body)
+    }
+
     return await response.json()
 }
 
@@ -37,6 +48,16 @@ const getPictures = async () => {
     return await response.json()
 }
 
+const uploadPicture = async (file: File) => {
+    const formData = new FormData()
+    formData.append('picture', file)
+    return await fetch(`http://localhost:3000/api/pictures`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        body: formData, // content: content
+    })
+}
+
 const getDrawings = async (pictureId: string) => {
     const response = await fetch(`http://localhost:3000/api/pictures/${pictureId}/drawings`, {
         method: 'GET',
@@ -45,22 +66,27 @@ const getDrawings = async (pictureId: string) => {
     return await response.json()
 }
 
-const patchDrawing = async (pictureId: string, drawingId: string, content: string) => {
-    const response = await fetch(`http://localhost:3000/api/pictures/${pictureId}/drawings/${drawingId}`, {
+const patchDrawing = async (pictureId: string, drawingId: string, content: string, description: string) => {
+    return await fetch(`http://localhost:3000/api/pictures/${pictureId}/drawings/${drawingId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
-        body: JSON.stringify({ content }), // content: content
+        body: JSON.stringify({ content, description }), // content: content, description: description
     })
 }
 
-const uploadPicture = async (file: File) => {
-    const formData = new FormData()
-    formData.append("picture", file)
-    const response = await fetch(`http://localhost:3000/api/pictures`, {
+const createDrawing = async (pictureId: string) => {
+    return await fetch(`http://localhost:3000/api/pictures/${pictureId}/drawings`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-        body: formData, // content: content
     })
 }
 
-export { login, signup, getPictures, getDrawings, patchDrawing, uploadPicture }
+const patchPicture = async (pictureId: string, description: string) => {
+    return await fetch(`http://localhost:3000/api/pictures/${pictureId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
+        body: JSON.stringify({ description }), // description: description
+    })
+}
+
+export { login, signup, getPictures, patchPicture, getDrawings, patchDrawing, uploadPicture, createDrawing }

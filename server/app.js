@@ -13,7 +13,7 @@ var app = express();
 
 //middleware
 // bodyparser is needed so we can pass json datas into this app. And because the Client and Server side runs on different port numbers.
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: "50mb"}));
 // this node.js app and the client-side app will be running in two different port numbers, 
 // so to communicate between them, we need to add the cors package
 app.use(cors());
@@ -23,11 +23,8 @@ app.use(passport.initialize());
 
 // error handler
 app.use((err, req, res, next) => {
-    if (err.name === 'ValidationError') {
-        var valErrors = [];
-        Object.keys(err.errors).forEach(key => valErrors.push(err.errors[key].message));
-        res.status(422).send(valErrors)
-    }
+    res.status(500).send(err)
+    next()
 });
 
 // start express server

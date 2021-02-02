@@ -4,6 +4,13 @@ import Login from './pages/Login'
 import Pictures from './pages/Pictures'
 import Signup from './pages/Signup'
 import Editor from './pages/Editor'
+import { FC } from 'react'
+
+const PrivateRoute: FC<any> = ({ children, ...rest }) => (
+    <Route {...rest} >
+        {localStorage.getItem('token') !== null ? children : <Redirect to="/login" />}
+    </Route>
+)
 
 function App() {
     return (
@@ -18,12 +25,12 @@ function App() {
                 <Route path="/signup" exact>
                     <Signup />
                 </Route>
-                <Route path="/pictures" exact>
+                <PrivateRoute path="/pictures" exact>
                     <Pictures />
-                </Route>
-                <Route path="/pictures/:pictureId">
+                </PrivateRoute>
+                <PrivateRoute path="/pictures/:pictureId">
                     <Editor />
-                </Route>
+                </PrivateRoute>
             </Switch>
         </BrowserRouter>
     )

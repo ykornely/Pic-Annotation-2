@@ -3,7 +3,7 @@
         "PORT": 3000,
         "MONGODB_URI": "mongodb://localhost:27017/MongoDB",
         "JWT_SECRET": "SECRET#123",
-        "JWT_EXP": "500h"
+        "JWT_EXP": "500d"
     },
     "production": {
         "PORT": 80,

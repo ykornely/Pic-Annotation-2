@@ -1,4 +1,5 @@
 const Drawing = require('../models/drawing.model.js');
+const mongoose = require('mongoose');
 
 module.exports.getDrawings = (req, res, next) => {
     Drawing.find({userId: req._id, pictureId: req.params.pictureId}, (err, drawings) => {
@@ -12,26 +13,31 @@ module.exports.getDrawings = (req, res, next) => {
 
 module.exports.postDrawing = (req, res, next) => {
     // console.log(req.file);
-    var drawing = new Drawing();
-    drawing.userId = new mongoose.mongo.ObjectId(req._id);
-    drawing.description = "";
-    drawing.save((err, drawing) => {
-        console.log(err, drawing);
-        if (!err) {
-            res.send(drawing);
-        } else {
-            return next(err);
-        }
-    });
+    try {
+        var drawing = new Drawing();
+        drawing.userId = new mongoose.mongo.ObjectId(req._id);
+        drawing.pictureId = req.params.pictureId;
+        drawing.description = "";
+        drawing.save((err, drawing) => {
+            console.log(err, drawing);
+            if (!err) {
+                res.send(drawing);
+            } else {
+                return next(err);
+            }
+        });
+    } 
+    catch(error) {
+        console.log(error);
+    }
 }
 
 module.exports.patchDrawing = async (req, res, next) => {
     // console.log(req.file);
     try {
         const drawing = await Drawing.findOne({_id: req.params.drawingId});
-        console.log(drawing);
-        console.log(res.body);
         drawing.content = req.body.content;
+        drawing.description = req.body.description;
         await drawing.save();
         res.send(drawing);
     }

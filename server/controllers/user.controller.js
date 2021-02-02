@@ -10,7 +10,7 @@ const User = require('../models/user.model.js');
 module.exports.register = (req, res, next) => {
     var user = new User(); // new mongoose model User
     user.fullName = req.body.fullName;
-    user.email = req.body.email;
+    user.email = req.body.email.toLowerCase(); // TODO: testing
     user.password = req.body.password;
     user.save((err, doc) => {
         if (!err) {

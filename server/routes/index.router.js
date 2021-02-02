@@ -20,8 +20,9 @@ router.get('/userProfile', jwtHelper.verifyJwtToken, ctrlUser.userProfile); // p
 
 router.post('/pictures', jwtHelper.verifyJwtToken, upload.single("picture"), ctrlPicture.postPicture);
 router.get('/pictures', jwtHelper.verifyJwtToken, ctrlPicture.getPictures);
+router.patch('/pictures/:pictureId', jwtHelper.verifyJwtToken, ctrlPicture.patchPicture);
 
-router.get('/pictures/:id', /*jwtHelper.verifyJwtToken,*/ ctrlPicture.downloadPicture);
+router.get('/pictures/:id', jwtHelper.verifyJwtToken, ctrlPicture.downloadPicture);
 
 router.get('/pictures/:pictureId/drawings', jwtHelper.verifyJwtToken, ctrlDrawing.getDrawings);
 router.post('/pictures/:pictureId/drawings', jwtHelper.verifyJwtToken, ctrlDrawing.postDrawing);
