@@ -17,6 +17,7 @@ module.exports.postDrawing = (req, res, next) => {
         var drawing = new Drawing();
         drawing.userId = new mongoose.mongo.ObjectId(req._id);
         drawing.pictureId = req.params.pictureId;
+        drawing.content = JSON.stringify({lines: []});
         drawing.description = "";
         drawing.save((err, drawing) => {
             console.log(err, drawing);
@@ -40,6 +41,16 @@ module.exports.patchDrawing = async (req, res, next) => {
         drawing.description = req.body.description;
         await drawing.save();
         res.send(drawing);
+    }
+    catch(error) {
+        console.error(error);
+    }
+}
+
+module.exports.deleteDrawing = async (req, res, next) => {
+    try {
+        await Drawing.deleteOne({_id: req.params.drawingId});
+        res.send("Success!");
     }
     catch(error) {
         console.error(error);

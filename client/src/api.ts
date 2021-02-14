@@ -58,6 +58,21 @@ const uploadPicture = async (file: File) => {
     })
 }
 
+const patchPicture = async (pictureId: string, description: string) => {
+    return await fetch(`http://localhost:3000/api/pictures/${pictureId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
+        body: JSON.stringify({ description }), // description: description
+    })
+}
+
+const deletePicture = async (pictureId: string) => {
+    return await fetch(`http://localhost:3000/api/pictures/${pictureId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
+    })
+}
+
 const getDrawings = async (pictureId: string) => {
     const response = await fetch(`http://localhost:3000/api/pictures/${pictureId}/drawings`, {
         method: 'GET',
@@ -75,18 +90,18 @@ const patchDrawing = async (pictureId: string, drawingId: string, content: strin
 }
 
 const createDrawing = async (pictureId: string) => {
-    return await fetch(`http://localhost:3000/api/pictures/${pictureId}/drawings`, {
+    const response = await fetch(`http://localhost:3000/api/pictures/${pictureId}/drawings`, {
         method: 'POST',
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    })
+    return await response.json()
+}
+
+const deleteDrawing = async (pictureId: string, drawingId: string) => {
+    return await fetch(`http://localhost:3000/api/pictures/${pictureId}/drawings/${drawingId}`, {
+        method: 'DELETE',
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     })
 }
 
-const patchPicture = async (pictureId: string, description: string) => {
-    return await fetch(`http://localhost:3000/api/pictures/${pictureId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${localStorage.getItem('token')}` },
-        body: JSON.stringify({ description }), // description: description
-    })
-}
-
-export { login, signup, getPictures, patchPicture, getDrawings, patchDrawing, uploadPicture, createDrawing }
+export { login, signup, getPictures, patchPicture, getDrawings, patchDrawing, uploadPicture, createDrawing, deleteDrawing, deletePicture }

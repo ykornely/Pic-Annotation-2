@@ -1,9 +1,10 @@
 import CanvasDraw from 'react-canvas-draw'
 import { useRef } from 'react'
 import { useState, useEffect } from 'react'
-import { getDrawings, patchDrawing, createDrawing } from '../api'
+import { getDrawings, patchDrawing, createDrawing, deleteDrawing } from '../api'
 import { useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import { render } from '@testing-library/react'
 
 const Editor = () => {
     const params = useParams<any>()
@@ -17,9 +18,7 @@ const Editor = () => {
     useEffect(() => {
         const asyncGetDrawings = async () => {
             const drawings = await getDrawings(params.pictureId)
-            console.log('set drawing')
             setDrawings(drawings)
-            console.log('set drawingId')
             if (drawings.length !== 0) {
                 setDrawingId(drawings[0]._id)
                 setDrawingContent(drawings[0].content)
@@ -30,16 +29,17 @@ const Editor = () => {
         // return () => {console.log("Editor unmounted")} // if you press "back", this arrow function will be called (umount)
     }, []) // runs when mounted
 
-    if (drawings.length === 0) return null
+    // if (drawings.length === 0) return null
 
     const handleNewDrawing = async () => {
-        await createDrawing(params.pictureId)
+        const newDrawing = await createDrawing(params.pictureId)
+        setDrawings([...drawings, newDrawing]) // spread operator
     }
 
     return (
         <div className="editor">
             <div className="drawings">
-                {drawings.map((drawing: any) => {
+                {drawings.map((drawing: any, index) => {
                     return (
                         <button
                             onClick={() => {
@@ -49,14 +49,16 @@ const Editor = () => {
                                 canvas.current.loadSaveData(drawing.content, true) // bug of the canvasdraw library: doesn't refresh automatically on change, we have to refresh it manually
                             }}
                             className="drawing"
-                            key={drawing._id}
+                            key={index}
                         >
                             drawing
                         </button>
                     )
                 })}
             </div>
-            <div className="newDrawing"><button onClick={handleNewDrawing}>New Drawing</button></div>
+            <div className="newDrawing">
+                <button onClick={handleNewDrawing}>New Drawing</button>
+            </div>
             <div className="toolbar">
                 {drawingId !== '' && (
                     <>
@@ -82,12 +84,22 @@ const Editor = () => {
                             className="tool"
                             onClick={async () => {
                                 const response = await patchDrawing(params.pictureId, drawingId, canvas.current.getSaveData(), drawingDesc)
-                                const updatedDrawing = await response.json();
+                                const updatedDrawing = await response.json()
                                 const updatedDrawings = drawings.map((drawing) => (drawing._id === updatedDrawing._id ? updatedDrawing : drawing))
                                 setDrawings(updatedDrawings)
                             }}
                         >
                             save
+                        </button>
+                        <button
+                            className="tool"
+                            onClick={async () => {
+                                await deleteDrawing(params.pictureId, drawingId)
+                                window.location.reload()
+                                // setDrawings(drawings.filter((drawing) => drawing._id !== drawingId))
+                            }}
+                        >
+                            Delete
                         </button>
                     </>
                 )}
@@ -99,9 +111,7 @@ const Editor = () => {
                         const aspectRatio = parseFloat(localStorage.getItem('aspectRatio')!)
                         canvas.current = ref
                         if (!!canvas.current) {
-                            console.log('set canvas')
                             setCanvasHeight(canvas.current.canvasContainer.offsetWidth * aspectRatio)
-                            console.log(canvas.current.canvasContainer.offsetWidth * aspectRatio)
                         }
                     }}
                     saveData={drawingContent}
@@ -112,7 +122,7 @@ const Editor = () => {
                     hideGrid
                     lazyRadius={4}
                     brushColor="red"
-                    imgSrc={`http://localhost:3000/api/pictures/${params.pictureId}`}
+                    imgSrc={`http://localhost:3000/api/pictures/${params.pictureId}?token=${localStorage.getItem('token')}`}
                 />
             </div>
             <div className="description">

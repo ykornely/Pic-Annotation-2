@@ -48,6 +48,17 @@ module.exports.patchPicture = async (req, res, next) => {
     }
 }
 
+module.exports.deletePicture = async (req, res, next) => {
+    try {
+        await Picture.deleteOne({_id: req.params.pictureId});
+        res.send("Success!");
+    }
+    catch(error) {
+        console.error(error);
+        res.status(500).send(error.message)
+    }
+}
+
 module.exports.downloadPicture = (req, res, next) => {
     Picture.findById(req.params.id, (err, picture) => {
         if (!err) {
