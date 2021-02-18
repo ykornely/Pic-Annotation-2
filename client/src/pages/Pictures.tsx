@@ -25,15 +25,13 @@ const Picture: FC<{ picture: any; onPictureChange: any }> = (props) => {
     }
 
     return (
-        <>
-            <Link onClick={() => localStorage.setItem('aspectRatio', picture.aspectRatio)} className="picture" to={`/pictures/${picture._id}`}>
-                <img src={`http://localhost:3000/api/pictures/${picture._id}?token=${localStorage.getItem('token')}`} />
-            </Link>
-            <div className="description">
-                <textarea value={pictureDesc} onChange={handleOnChange} />
-            </div>
-            <div>
+        <div className="pictureComponent">
+            <div id="pictureAndButton">
+                <Link onClick={() => localStorage.setItem('aspectRatio', picture.aspectRatio)} to={`/pictures/${picture._id}`}>
+                    <img className="picture" src={`http://localhost:3000/api/pictures/${picture._id}?token=${localStorage.getItem('token')}`} />
+                </Link>
                 <button
+                    className="pictureDeleteButton"
                     onClick={async () => {
                         await deletePicture(picture._id)
                         window.location.reload()
@@ -42,7 +40,8 @@ const Picture: FC<{ picture: any; onPictureChange: any }> = (props) => {
                     Delete
                 </button>
             </div>
-        </>
+            <textarea className="pictureDescription" placeholder="description" value={pictureDesc} onChange={handleOnChange} />
+        </div>
     )
 }
 
@@ -79,19 +78,26 @@ const Pictures = () => {
     return (
         // all picture in pictures are changed with map to an img tag.
         <div>
-            <input type="search" value={search} onChange={(e) => setSearch(e.target.value)} /> {/* two way binding (value and onChange)*/}
+            <div id="logout">
+            <Link to={`/login`}>
+                <h2 className="logoutAndBack">Logout</h2>
+            </Link>
+            </div>
+            <div id="search">
+                <label>Search: </label>
+                <input type="search" value={search} placeholder="Search" onChange={(e) => setSearch(e.target.value)} /> {/* two way binding (value and onChange)*/}
+            </div>
             <div className="pictures">
                 {filteredPictures.map((picture: any) => {
                     return <Picture picture={picture} onPictureChange={handlePictureChange} key={picture._id}></Picture>
                 })}
             </div>
-            <form onSubmit={handleSubmit}>
-                <input type="file" onChange={(e) => setSelectedFile(e.target.files![0])} />
-                <input type="submit" value="Upload" />
-            </form>
-            <Link to={`/login`}>
-                <h2>Logout</h2>
-            </Link>
+            <div id="upload">
+                <form onSubmit={handleSubmit}>
+                    <input type="file" onChange={(e) => setSelectedFile(e.target.files![0])} />
+                    <input type="submit" value="Upload" />
+                </form>
+            </div>
         </div>
     )
 }

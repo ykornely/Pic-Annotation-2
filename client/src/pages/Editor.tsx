@@ -48,40 +48,47 @@ const Editor = () => {
                                 setDrawingDesc(drawing.description)
                                 canvas.current.loadSaveData(drawing.content, true) // bug of the canvasdraw library: doesn't refresh automatically on change, we have to refresh it manually
                             }}
-                            className="drawing"
+                            className="drawingListButton"
                             key={index}
                         >
-                            drawing
+                            {'Drawing #' + index}
                         </button>
                     )
                 })}
             </div>
-            <div className="newDrawing">
-                <button onClick={handleNewDrawing}>New Drawing</button>
+            <div>
+                <Link className="logoutAndBack" to={`/Pictures`}>
+                    <h2>Back</h2>
+                </Link>
+                <div id="newDrawing">
+                    <button onClick={handleNewDrawing} id="newDrawingButton" className="drawingListButton" style={{ backgroundColor: 'ffffff' }}>New Drawing</button>
+                </div>
             </div>
             <div className="toolbar">
                 {drawingId !== '' && (
                     <>
-                        <button className="tool">brush</button>
-                        <button className="tool">circle</button>
+                        <button className="tool" title="Brush">
+                            <img src="/icons/brush.png" className="toolIcon" alt="Brush" />
+                        </button>
+                        {/*<button className="tool" style={{backgroundColor: "black"}}>circle</button>*/}
                         <button
-                            className="tool"
+                            className="tool" title="Undo"
                             onClick={() => {
                                 canvas.current.undo()
                             }}
                         >
-                            undo
+                            <img src="/icons/undo.png" className="toolIcon" alt="Undo" />
                         </button>
                         <button
-                            className="tool"
+                            className="tool" title="Clear"
                             onClick={() => {
                                 canvas.current.clear()
                             }}
                         >
-                            clear
+                            <img src="/icons/clear.png" className="toolIcon" alt="Clear" />
                         </button>
                         <button
-                            className="tool"
+                            className="tool" title="Save"
                             onClick={async () => {
                                 const response = await patchDrawing(params.pictureId, drawingId, canvas.current.getSaveData(), drawingDesc)
                                 const updatedDrawing = await response.json()
@@ -89,48 +96,44 @@ const Editor = () => {
                                 setDrawings(updatedDrawings)
                             }}
                         >
-                            save
+                            <img src="/icons/save.png" className="toolIcon" alt="Save" />
                         </button>
                         <button
-                            className="tool"
+                            className="tool"  title="Delete"
                             onClick={async () => {
                                 await deleteDrawing(params.pictureId, drawingId)
                                 window.location.reload()
                                 // setDrawings(drawings.filter((drawing) => drawing._id !== drawingId))
                             }}
                         >
-                            Delete
+                            <img src="/icons/delete.png" className="toolIcon" alt="Delete" />
                         </button>
                     </>
                 )}
             </div>
-
-            <div className="canvas">
-                <CanvasDraw
-                    ref={(ref) => {
-                        const aspectRatio = parseFloat(localStorage.getItem('aspectRatio')!)
-                        canvas.current = ref
-                        if (!!canvas.current) {
-                            setCanvasHeight(canvas.current.canvasContainer.offsetWidth * aspectRatio)
-                        }
-                    }}
-                    saveData={drawingContent}
-                    immediateLoading
-                    canvasWidth="100%"
-                    canvasHeight={canvasHeight}
-                    brushRadius={1}
-                    hideGrid
-                    lazyRadius={4}
-                    brushColor="red"
-                    imgSrc={`http://localhost:3000/api/pictures/${params.pictureId}?token=${localStorage.getItem('token')}`}
-                />
+            <div>
+                <div className="canvas">
+                    <CanvasDraw
+                        ref={(ref) => {
+                            const aspectRatio = parseFloat(localStorage.getItem('aspectRatio')!)
+                            canvas.current = ref
+                            if (!!canvas.current) {
+                                setCanvasHeight(canvas.current.canvasContainer.offsetWidth * aspectRatio)
+                            }
+                        }}
+                        saveData={drawingContent}
+                        immediateLoading
+                        canvasWidth="100%"
+                        canvasHeight={canvasHeight}
+                        brushRadius={1}
+                        hideGrid
+                        lazyRadius={4}
+                        brushColor="red"
+                        imgSrc={`http://localhost:3000/api/pictures/${params.pictureId}?token=${localStorage.getItem('token')}`}
+                    />
+                </div>
+                <textarea className="drawingDescription" placeholder="description" value={drawingDesc} onChange={(e) => setDrawingDesc(e.target.value)} />
             </div>
-            <div className="description">
-                <textarea value={drawingDesc} onChange={(e) => setDrawingDesc(e.target.value)} />
-            </div>
-            <Link to={`/Pictures`}>
-                <h2>Back</h2>
-            </Link>
         </div>
     )
 }
